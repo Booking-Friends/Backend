@@ -23,15 +23,16 @@ export class UserService{
         return await this.userRepository.find(findOptions);
     }
 
-    async registerUsers(userDto: UserDTO){
-        const user = new User();
+    async registerUser(userDto: UserDTO){
+        const user:User = new User();
         user.name = userDto.name;
+        user.userName = userDto.userName;
         user.birthDate = userDto.birthDate;
         user.email = userDto.email;
         user.lastName = userDto.lastName;
         user.password = userDto.password;
         user.phoneNumber = userDto.phoneNumber;
         user.role = await this.roleRepository.findOneByOrFail({name: userDto.role})
-        return await this.userRepository.create(user);
+        return await this.userRepository.save(user);
     }
 }

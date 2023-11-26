@@ -35,7 +35,7 @@ export class AuthenticateService {
   public async register(
     userDto: UserDTO
   ):Promise<IAuthenticate>{
-    const user: User = await this.userService.registerUsers(userDto);
+    const user: User = await this.userService.registerUser(userDto);
     const token = sign({...(user as Pick<User, 'ID' | 'name' | 'lastName' | 'role'> ) }, process.env.SECRET_KEY as string); 
     return {token}
   }

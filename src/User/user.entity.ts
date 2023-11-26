@@ -27,7 +27,7 @@ export class User {
     @Column({name:"Password"})
     password: string;
 
-    @Column({name:"BirthDate"})
+    @Column({name:"BirthDate", type:"date"})
     birthDate: Date;
 
     @Column({name:"Balance", default: 0})
