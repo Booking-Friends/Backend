@@ -1,38 +1,50 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { UUID } from "crypto";
-import { Role } from "src/Role/role.entity";
+import { IsEmail, IsEnum, IsNotEmpty, IsOptional, IsPhoneNumber, IsString } from "class-validator";
 import { RoleEnum } from "src/Role/role.enum";
-import { WeekendStatus } from "src/WeekendStatus/weekendStatus.entity";
-import { Column,JoinColumn, ManyToOne } from "typeorm";
-
+import { WeekendStatusEnum } from "src/WeekendStatus/weekendStatus.enum";
 export class UserDTO {
     @ApiProperty()
+    @IsNotEmpty()
+    @IsString()
     name: string;
 
     @ApiProperty()
+    @IsNotEmpty()
+    @IsString()
     lastName: string;
 
     @ApiProperty()
+    @IsNotEmpty()
+    @IsString()
     userName: string;
 
     @ApiProperty()
+    @IsNotEmpty()
+    @IsEmail()
     email: string;
 
     @ApiProperty()
+    @IsNotEmpty()
+    @IsPhoneNumber()
     phoneNumber: string;
 
     @ApiProperty()
+    @IsNotEmpty()
+    @IsString()
     password: string;
 
     @ApiProperty()
+    @IsNotEmpty()
+    @IsString()
     birthDate: Date;
 
-    @ApiProperty()
-    balance: number;
-
-    @ApiProperty({type: RoleEnum})
+    @ApiProperty({enum: RoleEnum})
+    @IsEnum(RoleEnum)
+    @IsNotEmpty()
     role:RoleEnum;
 
-    @ApiProperty()
-    weekendStatus:WeekendStatus;
+    @ApiProperty({enum: WeekendStatusEnum})
+    @IsEnum(WeekendStatusEnum)
+    @IsOptional()
+    weekendStatus?:WeekendStatusEnum;
 }

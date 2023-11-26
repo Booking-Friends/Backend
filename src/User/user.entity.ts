@@ -2,7 +2,7 @@
 import { UUID } from "crypto";
 import { Role } from "src/Role/role.entity";
 import { WeekendStatus } from "src/WeekendStatus/weekendStatus.entity";
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity()
 export class User {
@@ -13,52 +13,40 @@ export class User {
     name: string;
 
     @Column({name:"LastName"})
-    
     lastName: string;
 
     @Column({unique:true, name:"UserName"})
-    
     userName: string;
 
     @Column({unique: true, name:"Email"})
-    
     email: string;
 
     @Column({unique:true, name:"PhoneNumber"})
-    
     phoneNumber: string;
 
     @Column({name:"Password"})
-    
     password: string;
 
     @Column({name:"BirthDate"})
-    
     birthDate: Date;
 
-    @Column({name:"Balance"})
-    
+    @Column({name:"Balance", default: 0})
     balance: number;
 
-    @ManyToOne((_type) => Role, (role) => role.ID)
-    @JoinColumn({name:"Role"})
-    
+    @ManyToOne((_type) => Role)
+    @JoinColumn({name:"RoleID"})
     role:Role;
     
-    @Column({name: "IsDeleted"})
-    
-    isDeleted: boolean;
+    @Column({name: "IsDeleted", default: false})
+    isDeleted?: boolean;
 
-    @Column({name:"DateCreated"})
-    
+    @CreateDateColumn({name:"DateCreated"})
     dateCreated: Date;
 
-    @Column({name:"DateUpdated"})
-    
+    @UpdateDateColumn({name:"DateUpdated"})
     dateUpdated: Date;
 
-    @ManyToOne((_type) => WeekendStatus, (weekendStatus) => weekendStatus.ID)
-    @JoinColumn({name:"WeekendStatus"})
-    
-    weekendStatus:WeekendStatus;
+    @ManyToOne((_type) => WeekendStatus, (weekendStatus) => weekendStatus.ID, {nullable: true})
+    @JoinColumn({name:"WeekendStatusID"})
+    weekendStatus?:WeekendStatus;
 }
