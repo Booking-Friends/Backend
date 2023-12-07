@@ -14,6 +14,11 @@ import { WeekendStatusService } from './WeekendStatus/weekendStatus.service';
 import { WeekendStatus } from './WeekendStatus/weekendStatus.entity';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
+import { AddressModule } from './Address/address.module';
+import { PartyModule } from './Party/party.module';
+import { TrystsModule } from './Trysts/trysts.module';
+import { PresentModule } from './Present/present.module';
+import { ReportModule } from './Report/report.module';
 
 const envFilePath: string = getEnvPath(`${__dirname}/../src/common/envs`);
 @Module({
@@ -24,10 +29,15 @@ const envFilePath: string = getEnvPath(`${__dirname}/../src/common/envs`);
       signOptions: { expiresIn: process.env.EXPIRES_IN as string },
     }),
     PassportModule.register({defaultStrategy:"jwt"}),
-    TypeOrmModule.forRootAsync({ useClass: TypeOrmConfigService }),
+    TypeOrmModule.forRootAsync({ useClass: TypeOrmConfigService}),
     TypeOrmModule.forFeature([Role, WeekendStatus]),
     UserModule,
-    AuthenticateModule
+    AuthenticateModule,
+    AddressModule,
+    PartyModule,
+    TrystsModule,
+    PresentModule,
+    ReportModule
   ],
   controllers: [AuthenticateController],
   providers: [AuthenticateService, JwtStrategy, RoleService, WeekendStatusService],

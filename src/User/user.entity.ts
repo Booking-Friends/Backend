@@ -34,7 +34,7 @@ export class User {
     balance: number;
 
     @ManyToOne((_type) => Role)
-    @JoinColumn({name:"RoleID"})
+    @JoinColumn({name:"Role"})
     role:Role;
     
     @Column({name: "IsDeleted", default: false})
