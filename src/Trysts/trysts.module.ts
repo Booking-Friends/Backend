@@ -2,7 +2,7 @@ import { Module } from "@nestjs/common";
 import { TrystsController } from "./trysts.controller";
 import { TrystsService } from "./trysts.service";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { Trysts } from "./trysts.dto";
+import { Trysts } from "./trysts.entity";
 
 
 @Module({

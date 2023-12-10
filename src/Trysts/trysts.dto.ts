@@ -1,7 +1,7 @@
-import { IsNotEmpty, IsUUID } from "class-validator";
+import { IsDate, IsNotEmpty, IsUUID } from "class-validator";
 import { UUID } from "crypto";
 
-export class Trysts{
+export class TrystsDto{
     @IsNotEmpty()
     @IsUUID()
     customerId:UUID;
@@ -9,6 +9,10 @@ export class Trysts{
     @IsNotEmpty()
     @IsUUID()
     friendId:UUID;
+
+    @IsNotEmpty()
+    @IsDate()
+    dateStarting:Date;
 
     @IsNotEmpty()
     @IsUUID()

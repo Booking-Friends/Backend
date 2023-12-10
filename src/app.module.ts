@@ -19,6 +19,7 @@ import { PartyModule } from './Party/party.module';
 import { TrystsModule } from './Trysts/trysts.module';
 import { PresentModule } from './Present/present.module';
 import { ReportModule } from './Report/report.module';
+import { Address } from './Address/address.entity';
 
 const envFilePath: string = getEnvPath(`${__dirname}/../src/common/envs`);
 @Module({

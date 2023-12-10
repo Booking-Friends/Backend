@@ -6,25 +6,30 @@ import { Response } from "express";
 import { RoleEnum } from 'src/Role/role.enum';
 import { User } from './user.entity';
 import { JwtAuthenticateGuard } from 'src/Authentication/jwt.guard';
+import { RoleGuard } from 'src/Role/role.guard';
+import { Roles } from 'src/Role/roles.decorator';
+import { omit } from 'src/common/helper/omit.helper';
+import { getConnection } from 'typeorm';
 
 @ApiBearerAuth()
 @Controller('users')
 @ApiTags('Users endpoints')
-@UseGuards(JwtAuthenticateGuard)
+@UseGuards(JwtAuthenticateGuard,RoleGuard)
 export class UserController{
 
     constructor(private readonly userService:UserService){}
     
-    @Get()
+    @Get('friends')
+    @Roles(RoleEnum.Customer)
     async getFriends(@Res() response:Response){
         try{
-            return response.status(200).json(await this.userService.getUsers({
+            return response.status(200).json((await this.userService.getUsers({
                 where:{
                     role:{
                         name: RoleEnum.Friend
                     }
                 }
-            }) as Omit<User, 'password' | 'isDeleted' | 'dateCreated' |  'dateUpdated'>[]);
+            })).map((user)=>omit(user, 'password','isDeleted','dateCreated',  'dateUpdated')));
         }catch{
             return response.status(500).send({message:"Internal Server Error"})
         }
@@ -33,10 +38,12 @@ export class UserController{
     @Get(':id')
     async getUserByID(@Param('id') id:UUID, @Res() response:Response){
         try{
-            return response.status(200).json(await this.userService.getUser({where:{ID: id}}) as Omit<User, 'password' | 'isDeleted' | 'dateCreated' | 'dateUpdated'>);
+            return response.status(200).json(omit(await this.userService.getUser({where:{ID: id}}), 'password','isDeleted','dateCreated',  'dateUpdated'));
         }catch{
             return response.status(500).send({message:"Internal Server Error"})
         }
     }
+
+    
 
 }
