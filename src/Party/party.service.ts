@@ -20,12 +20,14 @@ export class PartyService{
 
     async saveParty(party:PartyDto, partyId?:UUID):Promise<Party>{
         const newParty = new Party();
-        if(! await(this.userService.isUserAviable(party.plannerId, party.dateStarting, party.dateEnding))) {
+        if(! await(this.userService.isUserAviable(party.plannerId, party.dateStarting, party.dateEnding)) && !partyId) {
             new BadRequestException("Planner is not aviable in this time");}
         for(const memebrId of party.partyMembersIds){
-            if(! await(this.userService.isUserAviable(memebrId, party.dateStarting, party.dateEnding))) throw new BadRequestException("On of members is not aviable in this time");
+            if(! await(this.userService.isUserAviable(memebrId, party.dateStarting, party.dateEnding)) && !partyId) throw new BadRequestException("On of members is not aviable in this time");
         }
-        if(partyId && await this.userRepository.findOne({where:{ID:partyId}})) newParty.ID = partyId;
+        if(partyId && await this.partyRepository.findOne({where:{ID:partyId}})) {
+            newParty.ID = partyId;
+        }
         newParty.address = await this.addressRepository.findOneOrFail({where:{ID:party.addressId}})
         newParty.dateStarting = party.dateStarting;
         newParty.dateEnding = party.dateEnding;
@@ -33,6 +35,7 @@ export class PartyService{
         newParty.name = party.name;
         newParty.partyMembers = await this.userRepository.find({where:{ID:In(party.partyMembersIds)}});
         newParty.planner = await this.userRepository.findOneOrFail({where:{ID:party.plannerId}});
+        console.log(newParty, '----', partyId)
         return await this.partyRepository.save(newParty);
     }
 
