@@ -17,7 +17,7 @@ export class UserService{
         @InjectRepository(User)
         private readonly userRepository:Repository<User>,
         @InjectRepository(WeekendStatus)
-        private readonly weekendStatus: Repository<WeekendStatus>,
+        private readonly weekendStatusRepository: Repository<WeekendStatus>,
         @InjectRepository(Role)
         private readonly roleRepository: Repository<Role>,
         @InjectRepository(Trysts)
@@ -41,10 +41,8 @@ export class UserService{
         .leftJoinAndSelect('friend.weekendStatus', 'friendWeekendStatus')
         .where('(customer.Id = :userId OR friend.Id = :userId)', { userId: userId })
         .andWhere(new Brackets(qb => {
-            qb.where('(tryst.dateStarting BETWEEN :start AND :end)', { start: dateStarting, end: dateEnding })
-              .orWhere('(tryst.dateEnding BETWEEN :start AND :end)', { start: dateStarting, end: dateEnding })
-              .orWhere(':start BETWEEN tryst.dateStarting AND tryst.dateEnding', { start: dateStarting })
-              .orWhere(':end BETWEEN tryst.dateStarting AND tryst.dateEnding', { end: dateEnding });
+            qb.where('tryst.dateStarting NOT BETWEEN :start AND :end', { start: dateStarting, end: dateEnding })
+            .andWhere('tryst.dateEnding NOT BETWEEN :start AND :end', { start: dateStarting, end: dateEnding });
         }))
         .andWhere('friendWeekendStatus.status = :weekendStatus', { weekendStatus: WeekendStatusEnum.OnSite })
         .getMany();
@@ -78,9 +76,15 @@ export class UserService{
         user.password = userDto.password;
         user.phoneNumber = userDto.phoneNumber;
         if(user.weekendStatus){
-            user.weekendStatus = await this.weekendStatus.findOneByOrFail({status: userDto.weekendStatus})
+            user.weekendStatus = await this.weekendStatusRepository.findOneByOrFail({status: userDto.weekendStatus})
         }
         user.role = await this.roleRepository.findOneByOrFail({name: userDto.role})
+        return await this.userRepository.save(user);
+    }
+
+    async takeDayOff(userId:UUID){
+        const user = await this.userRepository.findOneOrFail({where:{ID:userId}})
+        user.weekendStatus = await this.weekendStatusRepository.findOneOrFail({where:{status:WeekendStatusEnum.OnWeekend}});
         return await this.userRepository.save(user);
     }
 }

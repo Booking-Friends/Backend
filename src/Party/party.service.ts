@@ -39,8 +39,12 @@ export class PartyService{
         return await this.partyRepository.save(newParty);
     }
 
-    async deleteParty(partyId: UUID):Promise<undefined>{
-        await this.partyRepository.delete({ID:partyId})
+    async deleteParty(partyId: UUID, userId?:UUID):Promise<undefined>{
+        if(await this.partyRepository.findOne(userId ? {where:{ID: partyId, planner: {ID: userId}}} : {where:{ID: partyId}})){
+           await this.partyRepository.delete({ID:partyId})
+           return;
+        }
+        throw new Error('Method not allowed');
     }
 
     async getParty(partyId:UUID):Promise<Party>{

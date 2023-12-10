@@ -1,5 +1,5 @@
 import { UserService } from './user.service';
-import { Controller, Get, Param, Res, UseGuards } from "@nestjs/common";
+import { Controller, Get, Param, Post, Req, Res, UnauthorizedException, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { UUID } from 'crypto';
 import { Response } from "express";
@@ -32,6 +32,22 @@ export class UserController{
             })).map((user)=>omit(user, 'password','isDeleted','dateCreated',  'dateUpdated')));
         }catch{
             return response.status(500).send({message:"Internal Server Error"})
+        }
+    }
+
+    @Post('take-dayoff')
+    @Roles(RoleEnum.Friend)
+    async takeDayOff(@Req() req,@Res() res:Response){
+        const user = req.user;
+        if(!user){
+            throw new UnauthorizedException()
+        }
+
+        try{
+            this.userService.takeDayOff(user.ID as UUID)
+            res.status(200).send();
+        }catch{
+            res.status(405).send();
         }
     }
 

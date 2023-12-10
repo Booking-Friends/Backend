@@ -1,9 +1,8 @@
-import { Body, Controller, Get, HttpStatus, Param, Post, Put, Req, Res, UnauthorizedException, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Req, Res, UseGuards } from "@nestjs/common";
 import { Response} from "express";
 import { RoleEnum } from "src/Role/role.enum";
 import { Roles } from "src/Role/roles.decorator";
 import { PartyService } from "./party.service";
-import { User } from "src/User/user.entity";
 import { JwtAuthenticateGuard } from "src/Authentication/jwt.guard";
 import { RoleGuard } from "src/Role/role.guard";
 import { UUID } from "crypto";
@@ -20,7 +19,7 @@ export class PartyController{
     @Get()
     @Roles(RoleEnum.Admin)
     async getAllPatries(@Res() res:Response){
-        return res.status(200).json(await this.partyService.getParties({}))
+        return res.status(200).json(await this.partyService.getParties({relations:{address:true, partyMembers:true,planner:true}}))
     }
 
     @Get('my-parties')
@@ -50,4 +49,17 @@ export class PartyController{
         return res.status(200).json(await this.partyService.saveParty(party, partyId))
     }
 
+    @Delete(':partyId')
+    @Roles(RoleEnum.Customer, RoleEnum.Admin)
+    async deleteParty(@Req() req,@Param('partyId') partyId:UUID, @Res() res:Response){
+
+        try{
+            const user = req.user;
+            user.role.name === RoleEnum.Admin ? await this.partyService.deleteParty(partyId) : await this.partyService.deleteParty(partyId, user.ID);
+            return res.status(204).send();
+        }
+        catch{
+            return res.status(409).send();
+        }
+    }
 }
