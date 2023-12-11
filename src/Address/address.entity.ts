@@ -17,7 +17,7 @@ export class Address {
     street:string;
 
     @Column({name:'ApartmentNumber'})
-    aparetmentNumber:string;
+    apartmentNumber:string;
 
     @Column({name:"ZipCode"})
     zipCode:number;

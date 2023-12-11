@@ -22,7 +22,7 @@ export class AddressService{
         if(addressId){
             newAddress.ID = addressId;
         }
-        newAddress.aparetmentNumber = address.aparetmentNumber;
+        newAddress.apartmentNumber = address.aparetmentNumber;
         newAddress.city = address.city;
         newAddress.country = address.country;
         newAddress.street = address.street;
