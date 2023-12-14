@@ -18,7 +18,7 @@ export class AuthenticateController {
       );
       return res.status(HttpStatus.OK).json({ response });
     } catch (error) {
-      return res.status(401).json(error.response);
+      return res.status(401).json(error);
     }
   }
  
@@ -30,7 +30,7 @@ export class AuthenticateController {
     }
     catch(error){
       console.log(error)
-      return res.status(500).json(error.response);
+      return res.status(500).json(error);
     }
   }
 }

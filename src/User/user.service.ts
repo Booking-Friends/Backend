@@ -21,7 +21,7 @@ export class UserService{
         @InjectRepository(Role)
         private readonly roleRepository: Repository<Role>,
         @InjectRepository(Trysts)
-        private readonly trystsRepositry:Repository<Trysts>,
+        private readonly trystsRepository:Repository<Trysts>,
         @InjectRepository(Party)
         private readonly partyRepository:Repository<Party>
     ){}
@@ -35,7 +35,7 @@ export class UserService{
     }
 
     async isUserAviable(userId:UUID, dateStarting:Date, dateEnding:Date){
-        const trysts = await this.trystsRepositry.createQueryBuilder('tryst')
+        const trysts = await this.trystsRepository.createQueryBuilder('tryst')
         .leftJoinAndSelect('tryst.customer', 'customer')
         .leftJoinAndSelect('tryst.friend', 'friend')
         .leftJoinAndSelect('friend.weekendStatus', 'friendWeekendStatus')
@@ -64,6 +64,61 @@ export class UserService{
         }
 
         return false;
+    }
+
+
+    async getMyEmployedFriends(customerId: UUID,minEmployments:number, dateFrom:Date, dateTo:Date){
+        const trystsSubquery = this.trystsRepository
+            .createQueryBuilder('tryst')
+            .select('tryst.friend', 'userId')
+            .where('tryst.customer = :customerId', { customerId })
+            .andWhere('tryst.dateStarting BETWEEN :dateFrom AND :dateTo', { dateFrom, dateTo })
+            .groupBy('tryst.friend')
+            .having('COUNT(tryst.friend) >= :minEmployments', { minEmployments });
+        
+        const partySubquery = this.partyRepository
+            .createQueryBuilder('party')
+            .select('partyMember.Id', 'userId')
+            .innerJoin('party.partyMembers', 'partyMember')
+            .where('party.planner = :customerId', { customerId })
+            .andWhere('party.dateStarting BETWEEN :dateFrom AND :dateTo', { dateFrom, dateTo })
+            .groupBy('partyMember.Id')
+            .having('COUNT(partyMember.Id) >= :minEmployments', { minEmployments });
+        
+        const usersQuery = this.userRepository
+            .createQueryBuilder('user')
+            .where(`user.Id IN (${trystsSubquery.getQuery()})`)
+            .orWhere(`user.Id IN (${partySubquery.getQuery()})`)
+            .setParameters({ ...trystsSubquery.getParameters(), ...partySubquery.getParameters(), customerId, minEmployments, dateFrom, dateTo });
+        
+        return await usersQuery.getMany();
+    }
+
+    async getMyEmployers(friendId:UUID, minEmployments:number, dateFrom:Date, dateTo:Date){
+        const trystsSubquery = this.trystsRepository
+            .createQueryBuilder('tryst')
+            .select('tryst.customer', 'userId')
+            .where('tryst.friend = :friendId', { friendId })
+            .andWhere('tryst.dateStarting BETWEEN :dateFrom AND :dateTo', { dateFrom, dateTo })
+            .groupBy('tryst.customer')
+            .having('COUNT(tryst.friend) >= :minEmployments', { minEmployments });
+        
+        const partySubquery = this.partyRepository
+            .createQueryBuilder('party')
+            .select('party.planner', 'userId')
+            .innerJoin('party.partyMembers', 'partyMember')
+            .where('partyMember.Id = :friendId', { friendId })
+            .andWhere('party.dateStarting BETWEEN :dateFrom AND :dateTo', { dateFrom, dateTo })
+            .groupBy('party.planner')
+            .having('COUNT(party.planner) >= :minEmployments', { minEmployments });
+        
+        const usersQuery = this.userRepository
+            .createQueryBuilder('user')
+            .where(`user.Id IN (${trystsSubquery.getQuery()})`)
+            .orWhere(`user.Id IN (${partySubquery.getQuery()})`)
+            .setParameters({ ...trystsSubquery.getParameters(), ...partySubquery.getParameters(), friendId, minEmployments, dateFrom, dateTo });
+        
+        return await usersQuery.getMany();
     }
 
     async registerUser(userDto: UserDto){
