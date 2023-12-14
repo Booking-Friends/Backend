@@ -1,5 +1,5 @@
 import { UUID } from "crypto";
-import { PresentType } from "src/PresentType/PresentType.entity";
+import { PresentType } from "src/PresentType/presenttype.entity";
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()

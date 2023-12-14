@@ -6,7 +6,7 @@ import { Address } from "src/Address/address.entity";
 import { Party } from "src/Party/party.entity";
 import { Present } from "src/Present/present.entity";
 import { UserPresent } from "src/UserPresent/userpresent.entity";
-import { PresentType } from "src/PresentType/PresentType.entity";
+import { PresentType } from "src/PresentType/presenttype.entity";
 import { ReportType } from "src/ReportType/reporttype.entity";
 import { Report } from "src/Report/report.entity";
 import { Role } from "src/Role/role.entity";

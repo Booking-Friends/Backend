@@ -21,7 +21,7 @@ import { PresentModule } from './Present/present.module';
 import { ReportModule } from './Report/report.module';
 import { Address } from './Address/address.entity';
 import { MockModule } from './Mock/mock.module';
-import { PresentType } from './PresentType/PresentType.entity';
+import { PresentType } from './PresentType/presenttype.entity';
 import { PresentTypeService } from './PresentType/presenttype.service';
 import { ReportType } from './ReportType/reporttype.entity';
 import { ReportTypeService } from './ReportType/reporttype.service';

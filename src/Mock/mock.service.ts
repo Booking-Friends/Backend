@@ -14,7 +14,7 @@ import { Trysts } from 'src/Trysts/trysts.entity';
 import { readFileSync, readdir, readdirSync } from 'fs';
 import { PresentTypeEnum } from 'src/PresentType/presenttype.enum';
 import { Present } from 'src/Present/present.entity';
-import { PresentType } from 'src/PresentType/PresentType.entity';
+import { PresentType } from 'src/PresentType/presenttype.entity';
 import { UserPresent } from 'src/UserPresent/userpresent.entity';
 import { Injectable } from '@nestjs/common';
 import { PresentService } from 'src/Present/present.service';

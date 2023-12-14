@@ -6,7 +6,7 @@ import { UserPresent } from "src/UserPresent/userpresent.entity";
 import { UUID } from "crypto";
 import { User } from "src/User/user.entity";
 import { PresentDto } from "./present.dto";
-import { PresentType } from "src/PresentType/PresentType.entity";
+import { PresentType } from "src/PresentType/presenttype.entity";
 
 @Injectable()
 export class PresentService{

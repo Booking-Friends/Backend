@@ -5,7 +5,7 @@ import { Present } from "./present.entity";
 import { PresentService } from "./present.service";
 import { UserPresent } from "src/UserPresent/userpresent.entity";
 import { User } from "src/User/user.entity";
-import { PresentType } from "src/PresentType/PresentType.entity";
+import { PresentType } from "src/PresentType/presenttype.entity";
 
 
 
