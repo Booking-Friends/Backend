@@ -57,7 +57,7 @@ export class UserController{
     @ApiQuery({name:'dateFrom', required:false})
     @ApiQuery({name:'dateTo', required:false})
     @ApiQuery({name:'atLeastTimes', required:false})
-    async getMyEmployedFrineds(@Req() req,@Res() res:Response, @Query('atLeastTimes') minEmployments:number, @Query("dateFrom") dateFrom?:Date, @Query("dateTo") dateTo?:Date, ){
+    async getMyEmployedFrineds(@Req() req,@Res() res:Response, @Query('atLeastTimes') minEmployments?:number, @Query("dateFrom") dateFrom?:Date, @Query("dateTo") dateTo?:Date, ){
         const user = req.user;
         if(!user){
             throw new UnauthorizedException()
@@ -80,7 +80,8 @@ export class UserController{
     @ApiQuery({name:'dateFrom', required:false})
     @ApiQuery({name:'dateTo', required:false})
     @ApiQuery({name:'atLeastTimes', required:false})
-    async getMyEmployers(@Req() req,@Res() res:Response, @Query('atLeastTimes') minEmployments:number, @Query("dateFrom") dateFrom?:Date, @Query("dateTo") dateTo?:Date, ){
+    @Roles(RoleEnum.Friend)
+    async getMyEmployers(@Req() req,@Res() res:Response, @Query('atLeastTimes') minEmployments?:number, @Query("dateFrom") dateFrom?:Date, @Query("dateTo") dateTo?:Date ){
         const user = req.user;
         if(!user){
             throw new UnauthorizedException()
@@ -90,13 +91,53 @@ export class UserController{
         dateFrom = dateFrom || new Date('1900-01-01');
         dateTo = dateTo || new Date();
         try{
-            const frineds = await this.userService.getMyEmployers('ed545a4d-1f1d-424a-a45f-453328b301dd' as UUID, minEmployments, dateFrom, dateTo);
+            const frineds = await this.userService.getMyEmployers(user.ID as UUID, minEmployments, dateFrom, dateTo);
             return res.status(200).json(frineds.map((user)=>omit(user, 'password','isDeleted','dateCreated',  'dateUpdated')));
         }
         catch(error){
             return res.status(500).json(error)
         }
         
+    }
+
+    @Get('special-customers')
+    @ApiQuery({name:'dateFrom', required:false})
+    @ApiQuery({name:'dateTo', required:false})
+    @ApiQuery({name:'minDiffrentFriends', required:false})
+    @Roles(RoleEnum.Customer, RoleEnum.Friend)
+    async getSpecialCustomers(@Res() res:Response, @Query('minDiffrentFriends') minDiffrentFriends?:number, @Query("dateFrom") dateFrom?:Date, @Query("dateTo") dateTo?:Date ){
+        minDiffrentFriends = minDiffrentFriends || 1;
+        dateFrom = dateFrom || new Date('1900-01-01');
+        dateTo = dateTo || new Date();
+
+        try{
+            const customers = await this.userService.getSpecialCustomers(minDiffrentFriends, dateFrom, dateTo);
+            return res.status(200).json(customers.map((user)=>omit(user, 'password','isDeleted','dateCreated',  'dateUpdated')));
+        }
+        catch(error){
+            return res.status(500).json(error)
+        }
+
+    }
+
+    @Get('special-friends')
+    @ApiQuery({name:'dateFrom', required:false})
+    @ApiQuery({name:'dateTo', required:false})
+    @ApiQuery({name:'minHirings', required:false})
+    @Roles(RoleEnum.Customer, RoleEnum.Friend)
+    async getSpecialFrineds(@Res() res:Response, @Query('minHirings') minHirings?:number, @Query("dateFrom") dateFrom?:Date, @Query("dateTo") dateTo?:Date ){
+        minHirings = minHirings || 1;
+        dateFrom = dateFrom || new Date('1900-01-01');
+        dateTo = dateTo || new Date();
+
+        try{
+            const friends = await this.userService.getSpecialFrineds(minHirings, dateFrom, dateTo);
+            return res.status(200).json(friends.map((user)=>omit(user, 'password','isDeleted','dateCreated',  'dateUpdated')));
+        }
+        catch(error){
+            return res.status(500).json(error)
+        }
+
     }
 
     @Get(':id')

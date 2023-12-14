@@ -39,6 +39,18 @@ export class PartyService{
         return await this.partyRepository.save(newParty);
     }
 
+    async getFriendParties(friendId:UUID, minEmployments:number, dateFrom:Date, dateTo:Date){
+        const parties = await this.partyRepository.createQueryBuilder('party')
+            .leftJoinAndSelect('party.address', 'address')
+            .leftJoinAndSelect('party.planner', 'planner')
+            .innerJoinAndSelect('party.partyMembers', 'partyMember')
+            .where('partyMember.Id = :friendId', { friendId })
+            .andWhere('party.dateStarting BETWEEN :dateFrom AND :dateTo', { dateFrom, dateTo })
+            .groupBy('party.Id, planner.Id, address.Id, partyMember.Id')
+            .having('COUNT(party.Id) >= :minEmployments', { minEmployments }).getMany();
+        return parties;
+    }
+
     async deleteParty(partyId: UUID, userId?:UUID):Promise<undefined>{
         if(await this.partyRepository.findOne(userId ? {where:{ID: partyId, planner: {ID: userId}}} : {where:{ID: partyId}})){
            await this.partyRepository.delete({ID:partyId})

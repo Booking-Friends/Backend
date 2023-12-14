@@ -121,6 +121,73 @@ export class UserService{
         return await usersQuery.getMany();
     }
 
+    async getSpecialCustomers(minDifferentFriends:number, dateFrom:Date, dateTo:Date){
+        const trystsSubquery = this.trystsRepository
+            .createQueryBuilder('tryst')
+            .select('tryst.customer', 'customerId')
+            .addSelect('tryst.friend', 'friendId')
+            .where('tryst.dateStarting BETWEEN :dateFrom AND :dateTo', { dateFrom, dateTo });
+
+        const partySubquery = this.partyRepository
+            .createQueryBuilder('party')
+            .select('party.planner', 'customerId')
+            .innerJoin('party.partyMembers', 'partyMember')
+            .addSelect('partyMember.Id', 'friendId')
+            .where('party.dateStarting BETWEEN :dateFrom AND :dateTo', { dateFrom, dateTo });
+        
+        const customerIdsSubquery = `SELECT "result"."customerId"
+        FROM (${trystsSubquery.getQuery()} UNION ALL ${partySubquery.getQuery()}) AS result
+        GROUP BY "result"."customerId"
+        HAVING COUNT(DISTINCT "result"."friendId") >= :minDifferentFriends`
+
+        const usersQuery = await this.userRepository
+            .createQueryBuilder('user')
+            .where(`user.Id IN (${customerIdsSubquery})`)
+            .setParameters({
+                ...trystsSubquery.getParameters(),
+                ...partySubquery.getParameters(),
+                dateFrom,
+                dateTo,
+                minDifferentFriends
+        }).getMany();
+
+        return usersQuery;
+    }
+
+    async getSpecialFrineds(minHirings:number, dateFrom:Date, dateTo:Date){
+        const trystsSubquery = this.trystsRepository
+            .createQueryBuilder('tryst')
+            .select('tryst.friend', 'friendId')
+            .where('tryst.dateStarting BETWEEN :dateFrom AND :dateTo', { dateFrom, dateTo })
+            .getQuery();
+
+        const partySubquery = this.partyRepository
+            .createQueryBuilder('party')
+            .select('partyMember.Id', 'friendId')
+            .innerJoin('party.partyMembers', 'partyMember')
+            .where('party.dateStarting BETWEEN :dateFrom AND :dateTo', { dateFrom, dateTo })
+            .getQuery();
+        
+        
+        const users = await this.userRepository
+            .createQueryBuilder('user')
+            .where(`user.Id IN (
+                SELECT "trystResult"."friendId" FROM (${trystsSubquery}) AS "trystResult"
+                UNION ALL
+                SELECT "partyResult"."friendId" FROM (${partySubquery}) AS "partyResult"
+            )`)
+            .groupBy('user.Id')
+            .having('COUNT(user.Id) >= :minHirings', { minHirings })
+            .setParameters({
+                dateFrom, 
+                dateTo, 
+                minHirings
+            }).getMany();
+
+        return users;
+        
+    }
+
     async registerUser(userDto: UserDto){
         const user:User = new User();
         user.name = userDto.name;
