@@ -120,6 +120,24 @@ export class UserController{
 
     }
 
+    @Get('frineds-times-hired-party')
+    @ApiQuery({name:'dateFrom', required:false})
+    @ApiQuery({name:'dateTo', required:false})
+    @ApiQuery({name:'minGroupSize', required:false})
+    async findFrinedsTimesHiredOnParty(@Res() res:Response, @Query('minGroupSize') minGroupSize?:number, @Query("dateFrom") dateFrom?:Date, @Query("dateTo") dateTo?:Date ){
+        minGroupSize = minGroupSize || 1,
+        dateFrom = dateFrom || new Date('1900-01-01');
+        dateTo = dateTo || new Date();
+
+        try{
+            const data = await this.userService.findFrinedsTimesHiredOnParty(minGroupSize, dateFrom, dateTo);
+            return res.status(200).json(data);
+        }
+        catch(error){
+            return res.status(500).json(error)
+        }
+    }
+
     @Get('special-friends')
     @ApiQuery({name:'dateFrom', required:false})
     @ApiQuery({name:'dateTo', required:false})

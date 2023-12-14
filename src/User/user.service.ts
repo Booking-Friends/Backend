@@ -188,6 +188,28 @@ export class UserService{
         
     }
 
+    async findFrinedsTimesHiredOnParty(minGroupSize:number, dateFrom:Date, dateTo:Date){
+        const partySubquery = this.partyRepository
+            .createQueryBuilder('party')
+            .select('party.Id', 'partyId')
+            .innerJoin('party.partyMembers', 'partyMember')
+            .where('party.dateStarting BETWEEN :dateFrom AND :dateTo', { dateFrom, dateTo })
+            .groupBy('party.Id')
+            .having('COUNT(partyMember.Id) >= :minGroupSize', { minGroupSize })
+            .getQuery();
+        
+        const hiredFriends = await this.partyRepository
+            .createQueryBuilder('party')
+            .select('partyMember.Id', 'friendId')
+            .addSelect('COUNT(party.Id)', 'numParties')
+            .innerJoin('party.partyMembers', 'partyMember')
+            .where(`party.Id IN (${partySubquery})`)
+            .groupBy('partyMember.Id')
+            .setParameters({ dateFrom, dateTo, minGroupSize })
+            .getRawMany();
+        return hiredFriends;
+    }
+
     async registerUser(userDto: UserDto){
         const user:User = new User();
         user.name = userDto.name;

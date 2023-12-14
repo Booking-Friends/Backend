@@ -43,6 +43,21 @@ export class TrystsService{
         throw new Error('Method not allowed');
     }
 
+    async getTotalTrystsByMonth(){
+        const trystsCountByMonth = await this.trystsRepository
+            .createQueryBuilder('tryst')
+            .select('EXTRACT(MONTH FROM "tryst"."DateStarting")', 'month') // Extracts the month
+            .addSelect('EXTRACT(YEAR FROM "tryst"."DateStarting")', 'year') // Extracts the year
+            .addSelect('COUNT(tryst.Id)', 'count') // Counts the number of trysts
+            .groupBy('EXTRACT(MONTH FROM "tryst"."DateStarting")')
+            .addGroupBy('EXTRACT(YEAR FROM "tryst"."DateStarting")')
+            .orderBy('year', 'ASC')
+            .addOrderBy('month', 'ASC')
+            .getRawMany();
+
+        return trystsCountByMonth;
+    }
+
     async getTryst(trystId:UUID):Promise<Trysts>{
         return await this.trystsRepository.findOneByOrFail({ID:trystId})
     }

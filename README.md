@@ -6,20 +6,23 @@ The Booking Friends Backend is a versatile and dynamic platform designed to faci
 ## Installation
 
 ```bash
-$ yarn install
+$ yarn
 ```
 
 ## Running the app
 
 ```bash
 # development
-$ yarn run start
+$ yarn start
 
 # watch mode
-$ yarn run start:dev
+$ yarn dev
 
 # production mode
-$ yarn run start:prod
+$ yarn prod
 ```
 
+## Instructions
+
+To run the application, you need to configure the .env or development.env file. (For production mods, you need to delete development.env.) Configure the database and enter the data in the env file. Run the backend with the ```yarn start``` or ```yarn dev``` command. 
 
