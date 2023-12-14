@@ -11,6 +11,7 @@ async function bootstrap() {
     .addBearerAuth()
     .addTag('Booking')
     .build();
+  app.enableCors()
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('booking-api', app, document);
   await app.listen(3000); 
