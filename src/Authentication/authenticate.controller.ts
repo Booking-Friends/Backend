@@ -3,7 +3,7 @@ import { AuthenticateService } from './authenticate.service';
 import { AuthenticateDto } from './authenticate.dto';
 import { Response } from 'express';
 import { ApiTags } from '@nestjs/swagger';
-import { UserDTO } from 'src/User/user.dto';
+import { UserDto } from 'src/User/user.dto';
 import { JwtAuthenticateGuard } from './jwt.guard';
 @Controller('auth')
 @ApiTags('auth')
@@ -18,19 +18,19 @@ export class AuthenticateController {
       );
       return res.status(HttpStatus.OK).json({ response });
     } catch (error) {
-      return res.status(500).json(error.response);
+      return res.status(401).json(error);
     }
   }
  
   @Post('register')
-  async register(@Res() res:Response, @Body() userDto: UserDTO){
+  async register(@Res() res:Response, @Body() userDto: UserDto){
     try{
       const response = await this.authenticateService.register(userDto);
       return res.status(HttpStatus.OK).json({response})
     }
     catch(error){
       console.log(error)
-      return res.status(500).json(error.response);
+      return res.status(500).json(error);
     }
   }
 }

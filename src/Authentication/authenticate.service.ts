@@ -6,7 +6,7 @@ import { sign } from 'jsonwebtoken';
 import { AuthenticateDto } from './authenticate.dto';
 import { User } from 'src/User/user.entity';
 import { UserService } from 'src/User/user.service';
-import { UserDTO } from 'src/User/user.dto';
+import { UserDto } from 'src/User/user.dto';
 
 export interface IAuthenticate {
   readonly token: string;
@@ -24,19 +24,20 @@ export class AuthenticateService {
         password: authenticateDto.password,
         email: authenticateDto.email,
       },
+      relations:{role:true}
     });
     if (!user) {
       throw new NotFoundException('Invalid credentials');
     }
-    const token = sign({ ...(user as Pick<User, 'ID' | 'name' | 'lastName' | 'role'> ) }, process.env.SECRET_KEY as string);
+    const token = sign({ID:user.ID,name:user.name,lastName:user.lastName,role:user.role}, process.env.SECRET_KEY as string);
     return {token};
   }
 
   public async register(
-    userDto: UserDTO
+    userDto: UserDto
   ):Promise<IAuthenticate>{
     const user: User = await this.userService.registerUser(userDto);
-    const token = sign({...(user as Pick<User, 'ID' | 'name' | 'lastName' | 'role'> ) }, process.env.SECRET_KEY as string); 
+    const token = sign({ID:user.ID,name:user.name,lastName:user.lastName,role:user.role}, process.env.SECRET_KEY as string); 
     return {token}
   }
 }

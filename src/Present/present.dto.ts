@@ -1,22 +1,25 @@
 import { IsBase64, IsEnum, IsNotEmpty, IsNumber, IsString } from 'class-validator';
-import { Present } from './present.entity';
 import { PresentTypeEnum } from 'src/PresentType/presenttype.enum';
-import { PresentType } from 'src/PresentType/PresentType.entity';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class PresentDto{
   @IsNotEmpty()
   @IsString()
+  @ApiProperty()
   name: string;
 
   @IsNotEmpty()
   @IsNumber()
+  @ApiProperty()
   price: number;
 
   @IsNotEmpty()
-  @IsEnum(PresentType)
+  @IsEnum(PresentTypeEnum)
+  @ApiProperty({enum:PresentTypeEnum})
   type: PresentTypeEnum;
 
   @IsNotEmpty()
   @IsBase64()
-  imageRoot: string;
+  @ApiProperty()
+  image: string;
 }

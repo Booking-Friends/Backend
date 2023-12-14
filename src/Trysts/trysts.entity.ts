@@ -1,5 +1,5 @@
 import { UUID } from "crypto";
-import { Address } from "src/Address/Address.entity";
+import { Address } from "src/Address/address.entity";
 import { User } from "src/User/user.entity";
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
@@ -16,10 +16,13 @@ export class Trysts{
     @JoinColumn({name:"TrystFriend"})
     friend:User;
 
-    @Column({name:"DateEnding"})
+    @Column('timestamp',{name:"DateStarting"})
+    dateStarting:Date;
+
+    @Column('timestamp',{name:"DateEnding"})
     dateEnding: Date;
 
-    @ManyToOne((_type) =>Address)
+    @ManyToOne((_type) =>Address, {nullable:false})
     @JoinColumn({name:"Address"})
     address:Address;
 

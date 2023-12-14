@@ -1,7 +1,7 @@
+import { UUID } from "crypto";
 import { Present } from "src/Present/present.entity";
 import { User } from "src/User/user.entity";
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
-import { UUID } from "typeorm/driver/mongodb/bson.typings";
 
 @Entity()
 export class UserPresent{

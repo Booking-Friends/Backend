@@ -1,10 +1,9 @@
-import { UUID } from "crypto";
-import { Party } from "src/Party/party.entity";
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { UUID } from "crypto";;
+import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 
 @Entity()
-export class Address{
+export class Address {
     @PrimaryGeneratedColumn('uuid',{name:'Id'})
     ID: UUID;
 
@@ -18,7 +17,7 @@ export class Address{
     street:string;
 
     @Column({name:'ApartmentNumber'})
-    aparetmentNumber:string;
+    apartmentNumber:string;
 
     @Column({name:"ZipCode"})
     zipCode:number;

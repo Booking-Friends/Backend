@@ -2,7 +2,7 @@ import { ApiProperty } from "@nestjs/swagger";
 import { IsDate, IsEmail, IsEnum, IsNotEmpty, IsOptional, IsPhoneNumber, IsString } from "class-validator";
 import { RoleEnum } from "src/Role/role.enum";
 import { WeekendStatusEnum } from "src/WeekendStatus/weekendStatus.enum";
-export class UserDTO {
+export class UserDto {
     @ApiProperty()
     @IsNotEmpty()
     @IsString()

@@ -1,8 +1,9 @@
 
 import { UUID } from "crypto";
+import { Party } from "src/Party/party.entity";
 import { Role } from "src/Role/role.entity";
 import { WeekendStatus } from "src/WeekendStatus/weekendStatus.entity";
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToMany, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity()
 export class User {
